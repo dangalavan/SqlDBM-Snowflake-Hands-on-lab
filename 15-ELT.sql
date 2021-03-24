@@ -1,3 +1,6 @@
+-- Sample Data may vary between region / 
+-- ELT 
+
 -------------------------------------------------
 -- MULTI-TABLE INSERTS
 -------------------------------------------------   
@@ -97,59 +100,50 @@
 			FROM SNOWFLAKE_SAMPLE_DATA.TPCH_SF1.PARTSUPP P;
 
 
+    ------------------------------
+    -- Weather data
+    ------------------------------    
 
+        SET REC_SRC = 'SNOWFLAKE_SAMPLE_DATABASE_WEATHER';
 
+        -- https://openweathermap.org/forecast16#JSON
+        USE SCHEMA identifier($TARGET_DB_SCHEMA); 
 
-	USE DATABASE SNOWFLAKE_SAMPLE_DATA;
-	USE SCHEMA WEATHER;
-	SET REC_SRC = 'SNOWFLAKE_SAMPLE_DATABASE_WEATHER';
+        USE WAREHOUSE COMPUTE_WH;
 
-	/*
-	 --RESET
-	 
-		 TRUNCATE TABLE DATA_VAULT.PUBLIC.WEATHER_FORECAST_H;
-		 TRUNCATE TABLE DATA_VAULT.PUBLIC.WEATHER_FORECAST_S;	  
+        ALTER WAREHOUSE COMPUTE_WH SET WAREHOUSE_SIZE = 'MEDIUM';
 
-	 */
-	
-	-- https://openweathermap.org/forecast16#JSON
-    USE DATABASE LAB_PRELOADED;
-
-		USE WAREHOUSE COMPUTE_WH;
-		
-		ALTER WAREHOUSE COMPUTE_WH SET WAREHOUSE_SIZE = 'MEDIUM';
-	
         SET REC_SRC = 'SNOWFLAKE_SAMPLE_DATABASE';
 
-		INSERT OVERWRITE ALL 
-		----------------------------------			
-		-- Hub - Weather Forecast			
-		----------------------------------
-				INTO PUBLIC.WEATHER_FORECAST_H(FORECAST_BK,FORECAST_PK,LOAD_DTS,REC_SRC)			
-				VALUES (BK, PK, LOAD_DTS, REC_SRC)
+        INSERT OVERWRITE ALL 
+    ----------------------------------			
+    -- Hub - Weather Forecast			
+    ----------------------------------
+            INTO PUBLIC.WEATHER_FORECAST_H(FORECAST_BK,FORECAST_PK,LOAD_DTS,REC_SRC)			
+            VALUES (BK, PK, LOAD_DTS, REC_SRC)
 
-		----------------------------------
-		-- Sat - Weather Forecast	
-		----------------------------------	
-				INTO PUBLIC.WEATHER_FORECAST_S (FORECAST_H_FK,LOAD_DTS,COUNTRY_NAME,CITY_NAME, FORECAST_MADE_DTS, FORECAST_ATTRIBUTES,HASH_DIFF,REC_SRC)
-				VALUES (PK, LOAD_DTS, COUNTRY_NAME, CITY_NAME, FORECAST_MADE_DTS, VARIANT_PAYLOAD, HASH_DIFF, REC_SRC)	
+    ----------------------------------
+    -- Sat - Weather Forecast	
+    ----------------------------------	
+            INTO PUBLIC.WEATHER_FORECAST_S (FORECAST_H_FK,LOAD_DTS,COUNTRY_NAME,CITY_NAME, FORECAST_MADE_DTS, FORECAST_ATTRIBUTES,HASH_DIFF,REC_SRC)
+            VALUES (PK, LOAD_DTS, COUNTRY_NAME, CITY_NAME, FORECAST_MADE_DTS, VARIANT_PAYLOAD, HASH_DIFF, REC_SRC)	
 
-		------------------------------		
-		-- Source  ("Staging")	
-		------------------------------		        
-            SELECT (W.T::STRING || '-' || W.V:city.id::STRING) 	AS BK -- Concatenate JSON timestamp and City ID
-                    ,MD5(BK)						AS PK -- Add preferred Hashing approach				
-                    ,CURRENT_TIMESTAMP() 			AS LOAD_DTS	            
-                    ,W.V:city.country::STRING       AS COUNTRY_NAME             
-                    ,W.V:city.name::STRING          AS CITY_NAME
-                    ,w.T 							AS FORECAST_MADE_DTS
-                    ,w.V							AS VARIANT_PAYLOAD
-                    ,MD5(w.V)						AS HASH_DIFF
-                	,$REC_SRC						AS REC_SRC				
-            FROM  "SNOWFLAKE_SAMPLE_DATA"."WEATHER"."DAILY_14_TOTAL" W
-            WHERE W.V:city.country::STRING IN ('IE','US')	
-                AND w.T > DATEADD(DAY, -1,CURRENT_DATE());
-        
-	ALTER WAREHOUSE COMPUTE_WH SET WAREHOUSE_SIZE = 'XSMALL';		
+    ------------------------------		
+    -- Source  ("Staging")	
+    ------------------------------		        
+        SELECT (W.T::STRING || '-' || W.V:city.id::STRING) 	AS BK -- Concatenate JSON timestamp and City ID
+                ,MD5(BK)						AS PK -- Add preferred Hashing approach				
+                ,CURRENT_TIMESTAMP() 			AS LOAD_DTS	            
+                ,W.V:city.country::STRING       AS COUNTRY_NAME             
+                ,W.V:city.name::STRING          AS CITY_NAME
+                ,w.T 							AS FORECAST_MADE_DTS
+                ,w.V							AS VARIANT_PAYLOAD
+                ,MD5(w.V)						AS HASH_DIFF
+                ,$REC_SRC						AS REC_SRC				
+        FROM  "SNOWFLAKE_SAMPLE_DATA"."WEATHER"."DAILY_14_TOTAL" W
+        WHERE W.V:city.country::STRING IN ('IE','US')	
+            AND w.T > DATEADD(DAY, -1,CURRENT_DATE());
+
+ALTER WAREHOUSE COMPUTE_WH SET WAREHOUSE_SIZE = 'XSMALL';		
         
         
