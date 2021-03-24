@@ -8,16 +8,6 @@ CREATE SCHEMA IF NOT EXISTS "PUBLIC";
 USE DEV;
 
 
-CREATE FILE FORMAT IF NOT EXISTS "FILE_FORMAT_LAB"
- TYPE = CSV
- COMPRESSION = NONE
- RECORD_DELIMITER = '\n'
- FIELD_DELIMITER = '|'
- FILE_EXTENSION = '.csv';
-
-
-
-
 -- ************************************** "SUPPLIER_INVENTORY_H"
 CREATE TABLE IF NOT EXISTS "SUPPLIER_INVENTORY_H"
 (
@@ -201,59 +191,4 @@ CREATE OR REPLACE TABLE "WEATHER_FORECAST_S"
 
 
 
-
-
-
--- *********************** SqlDBM: Snowflake ************************
--- ******************************************************************
-
-CREATE OR REPLACE MATERIALIZED VIEW BIZ.VW_OPENWEATHER_FORECAST_MV 
-		AS
-		
-		SELECT S.FORECAST_H_FK 
-				,S.FORECAST_MADE_DTS
-				,S.FORECAST_ATTRIBUTES:city.country::STRING		COUNTRY_CODE
-				,S.FORECAST_ATTRIBUTES:city.name::STRING		CITY
-				,TO_TIMESTAMP(D.value:dt::STRING)				Weather_TIMESTAMP			
-	
-				,(D.value:temp.day::decimal(10,2) - 273.15)  	TEMPERATURE_CELCIUS_DAYTIME 
-				,(D.value:temp.min::decimal(10,2) - 273.15)  	TEMPERATURE_CELCIUS_MIN		
-				,(D.value:temp.max::decimal(10,2) - 273.15)  	TEMPERATURE_CELCIUS_MAX		
-			
-				,W.value:description::STRING 					WEATHER_DESCRIPTION
-		
-		FROM DATA_VAULT."PUBLIC".WEATHER_FORECAST_S S
-			,LATERAL FLATTEN (input => S.FORECAST_ATTRIBUTES, path => 'data') D
-			,LATERAL FLATTEN (INPUT => D.value:weather) W
-	
-		WHERE 	S.FORECAST_ATTRIBUTES:city.country::STRING = 'DE'
-			AND S.FORECAST_ATTRIBUTES:city.name::STRING = ('Munich');
-
-Create OR REPLACE View BIZ.VW_OPENWEATHER_FORECAST
-
-  Comment = 'Open Weather Map data'
-
-AS
-(
-  	SELECT S.FORECAST_H_FK 
-
-			,S.FORECAST_ATTRIBUTES:city.country::STRING		COUNTRY_CODE
-			,S.FORECAST_ATTRIBUTES:city.name::STRING		CITY
-			,TO_TIMESTAMP(D.value:dt::STRING)				Weather_TIMESTAMP			
-
-			,(D.value:temp.day::decimal(10,2) - 273.15)  	TEMPERATURE_CELCIUS_DAYTIME 
-			,(D.value:temp.min::decimal(10,2) - 273.15)  	TEMPERATURE_CELCIUS_MIN		
-			,(D.value:temp.max::decimal(10,2) - 273.15)  	TEMPERATURE_CELCIUS_MAX		
-		
-			,W.value:description::STRING 					WEATHER_DESCRIPTION
-			
-	FROM DATA_VAULT."PUBLIC".WEATHER_FORECAST_S S
-		,LATERAL FLATTEN (input => S.FORECAST_ATTRIBUTES, path => 'data') D
-		,LATERAL FLATTEN (INPUT => D.value:weather) W
-
-	WHERE 	S.FORECAST_ATTRIBUTES:city.country::STRING = 'DE'
-		AND S.FORECAST_ATTRIBUTES:city.name::STRING = ('Munich')
-		AND S.FORECAST_MADE_DTS > (DATEADD(month,-6, CURRENT_TIMESTAMP()))
-	ORDER BY S.FORECAST_MADE_DTS DESC, Weather_TIMESTAMP DESC
-);
 
