@@ -1,3 +1,12 @@
+/* 
+
+	Author: Dan Galavan, www.galavan.com
+	
+	Release date: 24-Mar-2021 
+
+	Notes: 	Shared under the MIT licence.
+	
+*/
 
 -- New file format
     SHOW FILE FORMATS;

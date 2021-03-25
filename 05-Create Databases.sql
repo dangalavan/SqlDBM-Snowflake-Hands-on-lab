@@ -1,3 +1,13 @@
+/* 
+
+	Author: Dan Galavan, www.galavan.com
+	
+	Release date: 24-Mar-2021 
+
+	Notes: 	Shared under the MIT licence.
+	
+*/
+
 CREATE OR REPLACE DATABASE DEV;
 USE DEV.PUBLIC;
 CREATE SCHEMA IF NOT EXISTS BIZ;
