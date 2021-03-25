@@ -1,5 +1,17 @@
--- Sample Data may vary between region / 
--- ELT 
+/* 
+
+	Author: Dan Galavan, www.galavan.com
+	
+	Release date: 24-Mar-2021 
+
+	Shared under the MIS licence.
+	
+	Note: 	The source data used in this script - the SNOWFLAKE_SAMPLE_DATABASE and corresponding tables - may
+			not be available in all regions. 
+			
+			It is available in  e.g. Snowflake AWS - EU (Ireland), and Snowflake Azure - West Europe (Netherlands)
+				
+*/
 
 -------------------------------------------------
 -- MULTI-TABLE INSERTS
