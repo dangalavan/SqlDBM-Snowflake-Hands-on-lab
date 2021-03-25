@@ -4,7 +4,7 @@
 	
 	Release date: 24-Mar-2021 
 
-	Shared under the MIS licence.
+	Shared under the MIT licence.
 	
 	Note: 	The source data used in this script - the SNOWFLAKE_SAMPLE_DATABASE and corresponding tables - may
 			not be available in all regions. 
