@@ -6,6 +6,8 @@
 
 	Notes: 	Shared under the MIT licence.
 	
+	Description: Use DDL generated from SqlDBM 
+	
 */
 
 -- *********************** SqlDBM: Snowflake ************************

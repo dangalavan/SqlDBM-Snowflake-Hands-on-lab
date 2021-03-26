@@ -6,6 +6,8 @@
 
 	Notes: 	Shared under the MIT licence.
 	
+	Description: View weather data
+	
 */
 
    USE SCHEMA LAB_PRELOADED.BIZ;

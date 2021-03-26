@@ -6,6 +6,8 @@
 
 	Notes: 	Shared under the MIT licence.
 	
+	Description: View metadata	
+	
 */
 
 -- New file format
