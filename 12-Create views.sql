@@ -6,6 +6,8 @@
 
 	Notes: 	Shared under the MIT licence.
 	
+	Description: parse JSON
+	
 */
 
 CREATE SCHEMA IF NOT EXISTS BIZ;

@@ -10,7 +10,9 @@
 			not be available in all regions. 
 			
 			It is available in  e.g. Snowflake AWS - EU (Ireland), and Snowflake Azure - West Europe (Netherlands)
-				
+
+
+	Description: Load data from source to target				
 */
 
 -------------------------------------------------
